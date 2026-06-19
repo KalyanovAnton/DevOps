@@ -16,7 +16,7 @@ services:
   django:
     build: .
     container_name: django_app
-    command: gunicorn core.wsgi:0.0.0.0:8000
+    command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/app
     ports:

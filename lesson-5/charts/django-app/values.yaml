@@ -1,3 +1,5 @@
+replicaCount: 2
+
 image:
   repository: 963894087696.dkr.ecr.us-west-2.amazonaws.com/lesson-5-ecr
   tag: latest
@@ -10,9 +12,37 @@ service:
 ingress:
   enabled: false
 
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 6
+  targetCPUUtilizationPercentage: 70
+
 config:
+  DEBUG: "True"
+  SECRET_KEY: "django-insecure-98-b2%^ohly9)=d4simzq1lv3h42zn!e(bt)5ho7=8dfi$#^es"
+  ALLOWED_HOSTS: "*"
   POSTGRES_PORT: 5432
   POSTGRES_HOST: db 
   POSTGRES_USER: django_user
   POSTGRES_DB: django_db
   POSTGRES_PASSWORD: pass9764gd
+
+
+probes:
+  liveness:
+    path: /
+    initialDelaySeconds: 30
+    periodSeconds: 10
+  readiness:
+    path: /
+    initialDelaySeconds: 30
+    periodSeconds: 10

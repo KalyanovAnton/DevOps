@@ -9,4 +9,4 @@ type: Opaque
 stringData:
   type: git
   url: https://github.com/KalyanovAnton/DevOps
-  password: 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
+  password: YOUR_GITHUB_TOKEN

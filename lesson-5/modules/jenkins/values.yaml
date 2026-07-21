@@ -44,8 +44,8 @@
                   - usernamePassword:
                       scope: GLOBAL
                       id: github-token
-                      username: AndriyDmitriv
-                      password: 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
+                      username: KalyanovAnton
+                      password: YOUR_GITHUB_TOKEN
                       description: GitHub PAT
       seed-job: |
         jobs:

@@ -38,12 +38,12 @@ variable "cluster_name" {
 
 variable "instance_type" {
   type        = string
-  default     = "t3.small" # Ментор просив звернути увагу на HPA, для нормальної роботи краще t3.small замість micro
+  default     = "t3.small" 
 }
 
 variable "desired_size" {
   type        = number
-  default     = 2 # Для HPA з minReplicas: 2 краще мати хоча б 2 ноди на старті
+  default     = 2 
 }
 
 variable "max_size" {

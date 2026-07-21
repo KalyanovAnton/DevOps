@@ -1,0 +1,5 @@
+server:
+  service:
+    type: LoadBalancer
+    servicePort: 80
+    targetPort: 8080

@@ -1,0 +1,85 @@
+ controller:
+  admin:
+    username: admin
+    password: admin123
+
+  serviceType: LoadBalancer
+  servicePort: 80
+  service:
+    port: 80
+    targetPort: 8080
+
+  resources:
+    limits:
+      cpu: "500m"
+      memory: "1Gi"
+    requests:
+      cpu: "250m"
+      memory: "512Mi"
+
+  persistentVolume:
+    enabled: true
+    storageClass: "ebs-sc"
+    size: 10Gi    
+
+  image:
+    repository: "jenkins/jenkins"
+    tag: "2.504.1-jdk17"    
+
+
+
+  installPlugins: []
+
+  serviceAccount:
+     name: jenkins-sa
+     create: false
+
+  JCasC:
+    configScripts:
+      credentials: |
+        credentials:
+          system:
+            domainCredentials:
+              - credentials:
+                  - usernamePassword:
+                      scope: GLOBAL
+                      id: github-token
+                      username: AndriyDmitriv
+                      password: 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
+                      description: GitHub PAT
+      seed-job: |
+        jobs:
+          - script: >
+              job('seed-job') {
+                description('Job to generate pipeline for Django project')
+                scm {
+                  git {
+                    remote {
+                      url('<https://github.com/AndriyDmitriv/infra.git>')
+                      credentials('github-token')
+                    }
+                    branches('*/main')
+                  }
+                }
+                steps {
+                  dsl {
+                    text('''
+                      pipelineJob("goit-django-docker") {
+                        definition {
+                          cpsScm {
+                            scm {
+                              git {
+                                remote {
+                                  url("<https://github.com/AndriyDmitriv/infra.git>")
+                                  credentials("github-token")
+                                }
+                                branches("*/main")
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ''')
+                  }
+                }
+              }

@@ -6,6 +6,14 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 5.0"
     }
+    helm = {
+      source  = "hashicorp/helm"
+      version = "~> 2.0"
+    }
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "~> 3.0"
+    }
   }
 }
 
@@ -35,11 +43,59 @@ module "ecr" {
 }
 
 module "eks" {
-  source          = "./modules/eks"          
-  cluster_name    = var.cluster_name
-  subnet_ids      = module.vpc.public_subnets
-  instance_type   = var.instance_type
-  desired_size    = var.desired_size
-  max_size        = var.max_size
-  min_size        = var.min_size
+  source        = "./modules/eks"
+  cluster_name  = var.cluster_name
+  subnet_ids    = module.vpc.public_subnets
+  instance_type = var.instance_type
+  desired_size  = var.desired_size
+  max_size      = var.max_size
+  min_size      = var.min_size
+}
+
+
+data "aws_eks_cluster" "eks" {
+  name = module.eks.eks_cluster_name
+}
+
+
+provider "helm" {
+  kubernetes {
+    host                   = data.aws_eks_cluster.eks.endpoint
+    cluster_ca_certificate = base64decode(data.aws_eks_cluster.eks.certificate_authority[0].data)
+
+    exec {
+      api_version = "client.authentication.k8s.io/v1beta1"
+      args        = ["eks", "get-token", "--cluster-name", data.aws_eks_cluster.eks.name, "--region", var.aws_region]
+      command     = "aws"
+    }
+  }
+}
+
+provider "kubernetes" {
+  host                   = data.aws_eks_cluster.eks.endpoint
+  cluster_ca_certificate = base64decode(data.aws_eks_cluster.eks.certificate_authority[0].data)
+
+  exec {
+    api_version = "client.authentication.k8s.io/v1beta1"
+    args        = ["eks", "get-token", "--cluster-name", data.aws_eks_cluster.eks.name, "--region", var.aws_region]
+    command     = "aws"
+  }
+}
+
+module "jenkins" {
+  source            = "./modules/jenkins"
+  cluster_name      = module.eks.eks_cluster_name
+  oidc_provider_url = module.eks.oidc_provider_url
+  oidc_provider_arn = module.eks.oidc_provider_arn
+  kubeconfig        = "~/.kube/config"
+
+  depends_on = [module.eks]
+}
+
+module "argo_cd" {
+  source        = "./modules/argo_cd"
+  namespace     = "argocd"
+  chart_version = "5.46.4"
+
+  depends_on = [module.eks]
 }

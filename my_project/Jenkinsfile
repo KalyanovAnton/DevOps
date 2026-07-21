@@ -1,0 +1,76 @@
+pipeline {
+  agent {
+    kubernetes {
+      yaml """
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    some-label: jenkins-kaniko
+spec:
+  serviceAccountName: jenkins-sa
+  containers:
+    - name: kaniko
+      image: gcr.io/kaniko-project/executor:v1.16.0-debug
+      imagePullPolicy: Always
+      command: ["sleep"]
+      args: ["99d"]
+    - name: git-tool
+      image: alpine/git:latest
+      command: ["sleep"]
+      args: ["99d"]
+"""
+    }
+  }
+
+  environment {
+    ECR_REGISTRY = "397114334021.dkr.ecr.us-west-2.amazonaws.com"
+    IMAGE_NAME   = "app"
+    IMAGE_TAG    = "${env.BUILD_NUMBER}" 
+    GITHUB_REPO  = "KalyanovAnton/DevOps"
+  }
+
+  stages {
+    stage('Build & Push Docker Image') {
+      steps {
+        container('kaniko') {
+          sh '''
+            /kaniko/executor \
+              --context=dir://my_project \
+              --dockerfile=my_project/Dockerfile \
+              --destination=$ECR_REGISTRY/$IMAGE_NAME:$IMAGE_TAG \
+              --cache=true
+          '''
+        }
+      }
+    }
+
+    stage('Update Helm Values & Push') {
+      steps {
+        container('git-tool') {
+          // Використовуємо токен, який налаштований у Jenkins Credentials під ID 'github-token'
+          withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_TOKEN')]) {
+            sh """
+              # Налаштовуємо Git всередині контейнера
+              git config --global user.email "jenkins@goit.local"
+              git config --global user.name "Jenkins CI"
+
+              # Клонуємо репозиторій для оновлення (можна той самий або інший за ТЗ)
+              git clone https://${GIT_USER}:${GIT_TOKEN}@github.com/${GITHUB_REPO}.git config-repo
+              cd config-repo
+
+              # Оновлюємо тег у values.yaml. Замість sed краще працює заміна регулярним виразом
+              # Припускаємо, що в values.yaml є рядок "tag: ... " або "repository: ... \n tag: ..."
+              sed -i "s/tag:.*/tag: \\"${IMAGE_TAG}\\"/g" charts/django-app/values.yaml
+
+              # Перевіряємо зміни, робимо коміт та пуш
+              git add charts/django-app/values.yaml
+              git commit -m "Update django-app image tag to ${IMAGE_TAG} [skip ci]" || echo "No changes to commit"
+              git push origin main
+            """
+          }
+        }
+      }
+    }
+  }
+}

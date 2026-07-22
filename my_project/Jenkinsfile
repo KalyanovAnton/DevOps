@@ -48,24 +48,22 @@ spec:
     stage('Update Helm Values & Push') {
       steps {
         container('git-tool') {
-          // Використовуємо токен, який налаштований у Jenkins Credentials під ID 'github-token'
           withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_TOKEN')]) {
             sh """
-              # Налаштовуємо Git всередині контейнера
+              # 1. Налаштовуємо Git
               git config --global user.email "jenkins@goit.local"
               git config --global user.name "Jenkins CI"
 
-              # Клонуємо репозиторій для оновлення (можна той самий або інший за ТЗ)
+              # 2. Клонуємо репозиторій
               git clone https://${GIT_USER}:${GIT_TOKEN}@github.com/${GITHUB_REPO}.git config-repo
               cd config-repo
 
-              # Оновлюємо тег у values.yaml. Замість sed краще працює заміна регулярним виразом
-              # Припускаємо, що в values.yaml є рядок "tag: ... " або "repository: ... \n tag: ..."
-              sed -i "s/tag:.*/tag: \\"${IMAGE_TAG}\\"/g" charts/django-app/values.yaml
+              # 3. Оновлюємо тег у values.yaml
+              sed -i 's/tag:.*/tag: "${IMAGE_TAG}"/g' lesson-5/argo_cd/django-app/values.yaml || sed -i 's/tag:.*/tag: "${IMAGE_TAG}"/g' my_project/values.yaml
 
-              # Перевіряємо зміни, робимо коміт та пуш
-              git add charts/django-app/values.yaml
-              git commit -m "Update django-app image tag to ${IMAGE_TAG} [skip ci]" || echo "No changes to commit"
+              # 4. Комітимо та пушимо
+              git add .
+              git commit -m "Update image tag to ${IMAGE_TAG} [skip ci]" || echo "No changes to commit"
               git push origin main
             """
           }

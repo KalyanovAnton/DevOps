@@ -59,7 +59,7 @@ spec:
               cd config-repo
 
               # 3. Оновлюємо тег у values.yaml
-              sed -i 's/tag:.*/tag: "${IMAGE_TAG}"/g' lesson-5/argo_cd/django-app/values.yaml || sed -i 's/tag:.*/tag: "${IMAGE_TAG}"/g' my_project/values.yaml
+              sed -i 's/tag:.*/tag: "${IMAGE_TAG}"/g' lesson-5/charts/django-app/values.yaml || sed -i 's/tag:.*/tag: "${IMAGE_TAG}"/g' my_project/values.yaml
 
               # 4. Комітимо та пушимо
               git add .

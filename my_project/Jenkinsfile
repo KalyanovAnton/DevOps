@@ -24,7 +24,7 @@ spec:
   }
 
   environment {
-    ECR_REGISTRY = "397114334021.dkr.ecr.us-west-2.amazonaws.com"
+    ECR_REGISTRY = "963894087696.dkr.ecr.us-west-2.amazonaws.com"
     IMAGE_NAME   = "app"
     IMAGE_TAG    = "${env.BUILD_NUMBER}" 
     GITHUB_REPO  = "KalyanovAnton/DevOps"

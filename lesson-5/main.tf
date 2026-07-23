@@ -114,14 +114,17 @@ module "rds" {
   parameter_group_family_rds = "postgres17"
 
   # Common
-  instance_class          = "db.t3.micro"
-  allocated_storage       = 20
-  db_name                 = "myapp"
-  username                = "postgres"
-  password                = "admin123AWS23"
-  subnet_private_ids      = module.vpc.private_subnets
-  subnet_public_ids       = module.vpc.public_subnets
-  publicly_accessible     = true
+  instance_class     = "db.t3.micro"
+  allocated_storage  = 20
+  db_name            = "myapp"
+  username           = var.db_username
+  password           = var.db_password
+  subnet_private_ids = module.vpc.private_subnets
+  subnet_public_ids  = module.vpc.public_subnets
+
+  publicly_accessible = false
+  allowed_cidr_blocks = [module.vpc.vpc_cidr_block]
+
   vpc_id                  = module.vpc.vpc_id
   multi_az                = true
   backup_retention_period = 1
@@ -134,4 +137,4 @@ module "rds" {
     Environment = "dev"
     Project     = "myapp"
   }
-} 
+}

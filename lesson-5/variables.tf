@@ -55,3 +55,16 @@ variable "min_size" {
   type    = number
   default = 2
 }
+
+
+variable "db_username" {
+  type        = string
+  description = "Master username for PostgreSQL database"
+  default     = "dbadmin"
+}
+
+variable "db_password" {
+  type        = string
+  description = "Master password for PostgreSQL database"
+  sensitive   = true
+}

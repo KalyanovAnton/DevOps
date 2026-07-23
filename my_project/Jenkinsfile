@@ -15,6 +15,9 @@ spec:
       imagePullPolicy: Always
       command: ["sleep"]
       args: ["99d"]
+    env:
+        - name: AWS_REGION
+          value: "us-west-2"
     - name: git-tool
       image: alpine/git:latest
       command: ["sleep"]
@@ -24,27 +27,28 @@ spec:
   }
 
   environment {
-    ECR_REGISTRY = "963894087696.dkr.ecr.us-west-2.amazonaws.com"
-    IMAGE_NAME   = "app"
-    IMAGE_TAG    = "${env.BUILD_NUMBER}" 
-    GITHUB_REPO  = "KalyanovAnton/DevOps"
+    ECR_REPO    = "${env.ECR_REPOSITORY_URL ?: '963894087696.dkr.ecr.us-west-2.amazonaws.com/lesson-5-ecr'}"
+    IMAGE_TAG   = "${env.BUILD_NUMBER}" 
+    GITHUB_REPO = "KalyanovAnton/DevOps"
   }
 
-  stages {
+stages {
     stage('Build & Push Docker Image') {
       steps {
         container('kaniko') {
           sh '''
+           
+            mkdir -p /kaniko/.docker
+            echo '{"credsStore": "ecr-login"}' > /kaniko/.docker/config.json
             /kaniko/executor \
               --context=dir://my_project \
               --dockerfile=my_project/Dockerfile \
-              --destination=$ECR_REGISTRY/$IMAGE_NAME:$IMAGE_TAG \
+              --destination=$ECR_REPO:$IMAGE_TAG \
               --cache=true
           '''
         }
       }
     }
-
     stage('Update Helm Values & Push') {
       steps {
         container('git-tool') {

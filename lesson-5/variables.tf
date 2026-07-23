@@ -17,41 +17,41 @@ variable "dynamodb_table_name" {
 }
 
 variable "vpc_cidr_block" {
-  type        = string
-  default     = "10.0.0.0/16"
+  type    = string
+  default = "10.0.0.0/16"
 }
 
 variable "vpc_name" {
-  type        = string
-  default     = "lesson-5-vpc"
+  type    = string
+  default = "lesson-5-vpc"
 }
 
 variable "ecr_name" {
-  type        = string
-  default     = "lesson-5-ecr"
+  type    = string
+  default = "lesson-5-ecr"
 }
 
 variable "cluster_name" {
-  type        = string
-  default     = "eks-cluster-demo"
+  type    = string
+  default = "eks-cluster-demo"
 }
 
 variable "instance_type" {
-  type        = string
-  default     = "t3.small" 
+  type    = string
+  default = "t3.small"
 }
 
 variable "desired_size" {
-  type        = number
-  default     = 2 
+  type    = number
+  default = 2
 }
 
 variable "max_size" {
-  type        = number
-  default     = 4
+  type    = number
+  default = 4
 }
 
 variable "min_size" {
-  type        = number
-  default     = 2
+  type    = number
+  default = 2
 }

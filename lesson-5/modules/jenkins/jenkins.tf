@@ -6,11 +6,16 @@ resource "helm_release" "jenkins" {
   version          = "5.8.27"
   create_namespace = true
   timeout          = 180
-  wait             = true 
+  wait             = true
 
   values = [
     file("${path.module}/values.yaml")
   ]
+
+  set {
+    name  = "controller.envVars.ECR_REPOSITORY_URL"
+    value = var.ecr_repository_url
+  }
 
 }
 
@@ -24,8 +29,8 @@ resource "kubernetes_storage_class_v1" "ebs_sc" {
 
   storage_provisioner = "ebs.csi.aws.com"
 
-  reclaim_policy       = "Delete"
-  volume_binding_mode  = "WaitForFirstConsumer"
+  reclaim_policy      = "Delete"
+  volume_binding_mode = "WaitForFirstConsumer"
 
   parameters = {
     type = "gp3"

@@ -4,8 +4,8 @@ variable "name" {
 }
 
 variable "engine" {
-  type        = string
-  default     = "postgres"
+  type    = string
+  default = "postgres"
 }
 variable "engine_cluster" {
   type    = string
@@ -21,18 +21,18 @@ variable "aurora_instance_count" {
   default = 2 # 1 primary + 1 replica
 }
 variable "engine_version" {
-  type        = string
-  default     = "14.7"
+  type    = string
+  default = "14.7"
 }
 
 variable "instance_class" {
-  type        = string
-  default     = "db.t3.micro"
+  type    = string
+  default = "db.t3.micro"
 }
 
 variable "allocated_storage" {
-  type        = number
-  default     = 20
+  type    = number
+  default = 20
 }
 
 variable "db_name" {

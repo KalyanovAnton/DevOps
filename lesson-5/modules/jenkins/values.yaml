@@ -28,7 +28,13 @@
 
 
 
-  installPlugins: []
+  installPlugins: 
+    - "kubernetes:latest"
+    - "workflow-aggregator:latest"
+    - "git:latest"
+    - "configuration-as-code:latest"
+    - "credentials-binding:latest"
+    - "job-dsl:latest"
 
   serviceAccount:
      name: jenkins-sa

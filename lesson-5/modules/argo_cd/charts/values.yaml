@@ -3,14 +3,14 @@ applications:
     namespace: default
     project: default
     source:
-      repoURL: <https://github.com/KalyanovAnton/DevOps>
-      path: django-chart
+      repoURL: https://github.com/KalyanovAnton/DevOps.git
+      path: lesson-5/charts/django-app
       targetRevision: main
       helm:
         valueFiles:
           - values.yaml
     destination:
-      server: <https://kubernetes.default.svc>
+      server: https://kubernetes.default.svc
       namespace: default
     syncPolicy:
       automated:
@@ -19,9 +19,9 @@ applications:
 
 repositories:
   - name: example-app
-    url: https://github.com/KalyanovAnton/DevOps
+    url: https://github.com/KalyanovAnton/DevOps.git
     username: KalyanovAnton
-    password: 
+    password: ""
 
 repoConfig:
   insecure: "true"

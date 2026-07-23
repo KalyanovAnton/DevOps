@@ -17,3 +17,8 @@ variable "oidc_provider_url" {
   type        = string
   description = "URL of the EKS OIDC provider"
 }
+
+variable "ecr_repository_url" {
+  type        = string
+  description = "Target ECR repository URL"
+}

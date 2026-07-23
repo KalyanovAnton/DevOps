@@ -1,3 +1,4 @@
+data "aws_caller_identity" "current" {}
 
 resource "aws_ecr_repository" "repo" {
   name                 = var.ecr_name
@@ -20,7 +21,7 @@ data "aws_iam_policy_document" "repo_policy_doc" {
 
     principals {
       type        = "AWS"
-      identifiers = ["*"]
+      identifiers = length(var.allowed_principals) > 0 ? var.allowed_principals : ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
     }
 
     actions = [

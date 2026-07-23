@@ -5,9 +5,9 @@ services:
     image: postgres:15-alpine
     container_name: postgres_db
     environment:
-      POSTGRES_DB: my_django_db
-      POSTGRES_USER: django_user
-      POSTGRES_PASSWORD: django_secure_password
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
@@ -16,16 +16,20 @@ services:
   django:
     build: .
     container_name: django_app
-    command: gunicorn core.wsgi:0.0.0.0:8000
+    command: gunicorn core.wsgi:application --bind 0.0.0.0:8000
     volumes:
       - .:/app
     ports:
       - "8000:8000"
     environment:
-      - DB_HOST=db
-      - DB_NAME=my_django_db
-      - DB_USER=django_user
-      - DB_PASSWORD=django_secure_password
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
+      - DEBUG=${DEBUG}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS}
+      - DB_HOST=${DB_HOST}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_PORT=${DB_PORT}
     depends_on:
       - db
 

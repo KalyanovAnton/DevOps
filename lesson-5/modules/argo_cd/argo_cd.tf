@@ -4,8 +4,8 @@ resource "helm_release" "argo_cd" {
   repository = "https://argoproj.github.io/argo-helm"
   chart      = "argo-cd"
   version    = var.chart_version
-  timeout = 900
-  wait             = true
+  timeout    = 900
+  wait       = true
 
   values = [
     file("${path.module}/values.yaml")
@@ -15,9 +15,9 @@ resource "helm_release" "argo_cd" {
 }
 
 resource "helm_release" "argo_apps" {
-  name       = "${var.name}-apps"
-  chart      = "${path.module}/charts"
-  namespace  = var.namespace
+  name             = "${var.name}-apps"
+  chart            = "${path.module}/charts"
+  namespace        = var.namespace
   create_namespace = false
 
   values = [

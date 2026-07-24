@@ -24,7 +24,7 @@ spec:
           args: [
             "core.wsgi:application", 
             "--bind", "0.0.0.0:8000", 
-            "--chdir", "my_project"
+            "my_project"
           ]
           envFrom:
             - configMapRef:

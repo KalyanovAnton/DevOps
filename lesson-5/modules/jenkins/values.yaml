@@ -1,4 +1,8 @@
- controller:
+serviceAccount:
+  create: false
+  name: jenkins-sa
+
+controller:
   admin:
     username: admin
     password: admin123
@@ -28,19 +32,15 @@
 
 
 
-  installPlugins: 
-    - "kubernetes:latest"
-    - "workflow-aggregator:latest"
-    - "git:latest"
-    - "configuration-as-code:latest"
-    - "credentials-binding:latest"
-    - "job-dsl:latest"
+installPlugins:
+  - kubernetes:latest
+  - workflow-aggregator:latest
+  - git:latest
+  - configuration-as-code:latest
+  - credentials-binding:latest
+  - job-dsl:latest
 
-  serviceAccount:
-     name: jenkins-sa
-     create: false
-
-  JCasC:
+JCasC:
     configScripts:
       credentials: |
         credentials:
@@ -61,7 +61,7 @@
                 scm {
                   git {
                     remote {
-                      url('<https://github.com/AndriyDmitriv/infra.git>')
+                      url('https://github.com/KalyanovAnton/DevOps')
                       credentials('github-token')
                     }
                     branches('*/main')
@@ -76,7 +76,7 @@
                             scm {
                               git {
                                 remote {
-                                  url("<https://github.com/AndriyDmitriv/infra.git>")
+                                  url("https://github.com/KalyanovAnton/DevOps")
                                   credentials("github-token")
                                 }
                                 branches("*/main")

@@ -4,7 +4,6 @@ resource "aws_db_subnet_group" "default" {
   tags       = var.tags
 }
 
-# Security group (used by both)
 resource "aws_security_group" "rds" {
   name        = "${var.name}-sg"
   description = "Security group for RDS"

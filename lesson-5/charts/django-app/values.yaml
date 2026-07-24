@@ -1,8 +1,8 @@
 replicaCount: 2
 
 image:
-  repository: 963894087696.dkr.ecr.us-west-2.amazonaws.com/lesson-5-ecr
-  tag: "14"
+  repository: lesson-5-ecr
+  tag: latest
   pullPolicy: IfNotPresent
 
 service:

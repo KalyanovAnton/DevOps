@@ -15,7 +15,7 @@ spec:
       imagePullPolicy: Always
       command: ["sleep"]
       args: ["99d"]
-    env:
+      env:
         - name: AWS_REGION
           value: "us-west-2"
     - name: git-tool
@@ -27,28 +27,34 @@ spec:
   }
 
   environment {
-    ECR_REPO    = "${env.ECR_REPOSITORY_URL ?: '963894087696.dkr.ecr.us-west-2.amazonaws.com/lesson-5-ecr'}"
-    IMAGE_TAG   = "${env.BUILD_NUMBER}" 
-    GITHUB_REPO = "KalyanovAnton/DevOps"
+    AWS_REGION    = 'us-west-2'
+    ECR_REPO_NAME = 'lesson-5-ecr'
+    GITHUB_REPO   = 'KalyanovAnton/DevOps'
+    IMAGE_TAG     = "${env.BUILD_NUMBER}"
   }
 
-stages {
+  stages {
     stage('Build & Push Docker Image') {
       steps {
         container('kaniko') {
-          sh '''
-           
-            mkdir -p /kaniko/.docker
-            echo '{"credsStore": "ecr-login"}' > /kaniko/.docker/config.json
-            /kaniko/executor \
-              --context=dir://my_project \
-              --dockerfile=my_project/Dockerfile \
-              --destination=$ECR_REPO:$IMAGE_TAG \
-              --cache=true
-          '''
+          script {
+            def awsAccountId = sh(script: 'aws sts get-caller-identity --query Account --output text', returnStdout: true).trim()
+            def ecrUrl = "${awsAccountId}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}"
+
+            sh """
+              mkdir -p /kaniko/.docker
+              echo '{"credsStore": "ecr-login"}' > /kaniko/.docker/config.json
+              /kaniko/executor \
+                --context=dir://. \
+                --dockerfile=Dockerfile \
+                --destination=${ecrUrl}:${IMAGE_TAG} \
+                --cache=true
+            """
+          }
         }
       }
     }
+
     stage('Update Helm Values & Push') {
       steps {
         container('git-tool') {
@@ -63,7 +69,11 @@ stages {
               cd config-repo
 
               # 3. Оновлюємо тег у values.yaml
-              sed -i 's/tag:.*/tag: "${IMAGE_TAG}"/g' lesson-5/charts/django-app/values.yaml || sed -i 's/tag:.*/tag: "${IMAGE_TAG}"/g' my_project/values.yaml
+              if [ -f "lesson-5/charts/django-app/values.yaml" ]; then
+                sed -i 's/tag:.*/tag: "${IMAGE_TAG}"/g' lesson-5/charts/django-app/values.yaml
+              elif [ -f "charts/django-app/values.yaml" ]; then
+                sed -i 's/tag:.*/tag: "${IMAGE_TAG}"/g' charts/django-app/values.yaml
+              fi
 
               # 4. Комітимо та пушимо
               git add .

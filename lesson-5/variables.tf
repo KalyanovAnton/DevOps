@@ -68,3 +68,9 @@ variable "db_password" {
   description = "Master password for PostgreSQL database"
   sensitive   = true
 }
+
+variable "ecr_repository_name" {
+  type        = string
+  default     = "lesson-5-ecr"
+  description = "Назва нашого ECR репозиторію"
+}

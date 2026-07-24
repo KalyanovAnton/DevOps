@@ -15,12 +15,6 @@ variable "engine_cluster" {
   description = "Database engine for Aurora cluster"
 }
 
-variable "aurora_instance_count" {
-  type        = number
-  default     = 2
-  description = "Number of instances in the Aurora cluster (1 primary + replicas)"
-}
-
 variable "engine_version" {
   type        = string
   default     = "17"
@@ -141,4 +135,10 @@ variable "tags" {
   type        = map(string)
   default     = {}
   description = "A map of tags to assign to all resources"
+}
+
+variable "aurora_reader_count" {
+  type        = number
+  default     = 1
+  description = "Кількість Reader інстансів у кластері Aurora"
 }

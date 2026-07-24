@@ -17,6 +17,11 @@ terraform {
   }
 }
 
+resource "aws_ecr_repository" "app" {
+  name                 = var.ecr_repository_name
+  image_tag_mutability = "MUTABLE"
+}
+
 provider "aws" {
   region = var.aws_region
 }
@@ -104,9 +109,9 @@ module "argo_cd" {
 module "rds" {
   source = "./modules/rds"
 
-  name                  = "myapp-db"
-  use_aurora            = false
-  aurora_instance_count = 2
+  name                = "myapp-db"
+  use_aurora          = false
+  aurora_reader_count = 1
 
   # --- RDS-only ---
   engine                     = "postgres"
